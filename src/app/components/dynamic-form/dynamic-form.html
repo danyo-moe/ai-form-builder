@@ -1,0 +1,104 @@
+<form
+  [formGroup]="form"
+  (ngSubmit)="submitForm()"
+  [attr.data-form-id]="config().id"
+  [attr.data-form-valid]="form.valid"
+  [attr.data-form-dirty]="form.dirty"
+  [attr.data-form-touched]="form.touched">
+
+  <div data-form-section="fields">
+    @for (field of getSortedFields(); track field.name) {
+      <div
+        [attr.data-field-name]="field.name"
+        [attr.data-field-type]="field.type"
+        [attr.data-field-valid]="!hasError(field.name)"
+        [attr.data-field-touched]="form.get(field.name)?.touched"
+        [attr.data-field-dirty]="form.get(field.name)?.dirty"
+        [attr.data-field-disabled]="form.get(field.name)?.disabled"
+        [attr.data-field-required]="isFieldRequired(field)"
+        [ngClass]="field.cssClass">
+
+        <label
+          [for]="field.name"
+          [attr.data-label-for]="field.name">
+          {{ field.label }}
+          @if (isFieldRequired(field)) {
+            <span data-required-indicator>*</span>
+          }
+        </label>
+
+        @switch (field.type) {
+          @case ('text') {
+            <input
+              [id]="field.name"
+              [formControlName]="field.name"
+              type="text"
+              [placeholder]="field.placeholder || ''"
+              [attr.data-input-type]="field.type"
+            />
+          }
+          @case ('email') {
+            <input
+              [id]="field.name"
+              [formControlName]="field.name"
+              type="email"
+              [placeholder]="field.placeholder || ''"
+              [attr.data-input-type]="field.type"
+            />
+          }
+          @case ('number') {
+            <input
+              [id]="field.name"
+              [formControlName]="field.name"
+              type="number"
+              [placeholder]="field.placeholder || ''"
+              [attr.data-input-type]="field.type"
+            />
+          }
+          @case ('textarea') {
+            <textarea
+              [id]="field.name"
+              [formControlName]="field.name"
+              [placeholder]="field.placeholder || ''"
+              [attr.data-input-type]="field.type"
+              rows="4"
+            ></textarea>
+          }
+          @case ('date') {
+            <input
+              [id]="field.name"
+              [formControlName]="field.name"
+              type="date"
+              [attr.data-input-type]="field.type"
+            />
+          }
+        }
+
+        @if (hasError(field.name)) {
+          <div
+            [attr.data-error-for]="field.name"
+            data-validation-error>
+            {{ getErrorMessage(field.name) }}
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <div data-form-section="actions">
+    @if (config().saveLabel) {
+      <button
+        type="button"
+        data-action="save"
+        (click)="saveForm()">
+        {{ config().saveLabel }}
+      </button>
+    }
+    <button
+      type="submit"
+      data-action="submit"
+      [attr.data-can-submit]="form.valid">
+      {{ config().submitLabel || 'Submit' }}
+    </button>
+  </div>
+</form>

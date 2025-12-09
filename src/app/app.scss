@@ -1,0 +1,268 @@
+// Test Harness Styles
+// Note: Form themes are imported globally in styles.scss
+.test-harness {
+  min-height: 100vh;
+  background: #f9fafb;
+}
+
+.harness-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2rem;
+  text-align: center;
+
+  h1 {
+    margin: 0 0 0.5rem 0;
+    font-size: 2.5rem;
+    font-weight: 700;
+  }
+
+  .subtitle {
+    margin: 0;
+    font-size: 1.125rem;
+    opacity: 0.9;
+  }
+}
+
+.view-switcher {
+  display: flex;
+  gap: 0;
+  background: white;
+  border-bottom: 2px solid #e5e7eb;
+  padding: 0 2rem;
+}
+
+.view-tab {
+  padding: 1rem 2rem;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover:not(:disabled) {
+    color: #374151;
+    background: #f9fafb;
+  }
+
+  &.active {
+    color: #667eea;
+    border-bottom-color: #667eea;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.view-content {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.info-banner {
+  background: white;
+  border-left: 4px solid #667eea;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  h3 {
+    margin: 0 0 0.75rem 0;
+    color: #667eea;
+  }
+
+  p {
+    margin: 0 0 1rem 0;
+    color: #4b5563;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1.5rem;
+    color: #6b7280;
+
+    li {
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+
+.preview-view {
+  display: grid;
+  gap: 2rem;
+}
+
+.theme-selector {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+}
+
+.theme-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.theme-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  strong {
+    font-size: 1rem;
+    color: #111827;
+  }
+
+  small {
+    font-size: 0.8125rem;
+    color: #6b7280;
+  }
+
+  &:hover {
+    border-color: #d1d5db;
+    background: #f3f4f6;
+  }
+
+  &.active {
+    background: #eff6ff;
+    border-color: #3b82f6;
+
+    strong {
+      color: #1d4ed8;
+    }
+  }
+}
+
+.form-preview {
+  background: white;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .preview-note {
+    margin: 0 0 2rem 0;
+    padding: 1rem;
+    background: #f0f9ff;
+    border-left: 3px solid #3b82f6;
+    font-size: 0.875rem;
+    color: #1e40af;
+  }
+}
+
+.submission-result {
+  background: #d1fae5;
+  border: 1px solid #6ee7b7;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+
+  h4 {
+    margin: 0 0 0.5rem 0;
+    color: #065f46;
+  }
+
+  pre {
+    margin: 0;
+    padding: 0.75rem;
+    background: #ecfdf5;
+    border-radius: 0.25rem;
+    font-size: 0.8125rem;
+    overflow-x: auto;
+    color: #065f46;
+  }
+}
+
+.info-panel {
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+
+  h3 {
+    margin: 0 0 0.75rem 0;
+    color: #92400e;
+  }
+
+  p {
+    margin: 0 0 1rem 0;
+    color: #78350f;
+  }
+
+  .data-attributes-list {
+    margin: 0;
+    padding-left: 1.5rem;
+    color: #78350f;
+
+    li {
+      margin-bottom: 0.5rem;
+
+      code {
+        background: #fef3c7;
+        padding: 0.125rem 0.375rem;
+        border-radius: 0.25rem;
+        font-size: 0.875rem;
+        color: #92400e;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .harness-header {
+    padding: 1.5rem;
+
+    h1 {
+      font-size: 1.75rem;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+    }
+  }
+
+  .view-switcher {
+    padding: 0 1rem;
+  }
+
+  .view-tab {
+    padding: 0.875rem 1rem;
+    font-size: 0.9375rem;
+  }
+
+  .view-content {
+    padding: 1rem;
+  }
+
+  .theme-buttons {
+    grid-template-columns: 1fr;
+  }
+}
