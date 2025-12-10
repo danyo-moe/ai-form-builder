@@ -10,6 +10,7 @@ import {
   TableColumnConfig,
   DataGridColumnConfig,
   DataGridColumnGroup,
+  PhoneConfig,
 } from '../../models/form-config.interface';
 import { FormStorage } from '../../services/form-storage';
 
@@ -79,6 +80,9 @@ export class DynamicForm implements OnInit, OnDestroy {
       } else if (field.type === 'datagrid' && field.datagridConfig) {
         // Create FormGroup for datagrid rows
         group[field.name] = this.createDataGridFormGroup(field);
+      } else if (field.type === 'phone') {
+        // Create FormGroup for phone field with countryCode and number
+        group[field.name] = this.createPhoneFormGroup(field);
       } else {
         const validators = this.buildValidators(field.validations || []);
         // Initialize checkbox fields with options as arrays
@@ -139,6 +143,39 @@ export class DynamicForm implements OnInit, OnDestroy {
     });
 
     return new FormGroup(controls);
+  }
+
+  /**
+   * Create FormGroup for a phone field
+   * Structure: { countryCode: string, number: string }
+   */
+  private createPhoneFormGroup(field: FormFieldConfig): FormGroup {
+    const phoneConfig = field.phoneConfig;
+    const existingValue = (field.value as { countryCode?: string; number?: string }) || {};
+
+    // Get default country code from config or existing value
+    const defaultCountryCode =
+      existingValue.countryCode ||
+      phoneConfig?.defaultCountryCode ||
+      (phoneConfig?.countryCodes?.[0]?.code ?? '');
+
+    // Build validators for the phone number
+    const numberValidators: any[] = [];
+    if (field.validations?.some((v) => v.type === 'required')) {
+      numberValidators.push(Validators.required);
+    }
+    // Add pattern validator for numbers only
+    numberValidators.push(Validators.pattern(/^\d*$/));
+
+    return new FormGroup({
+      countryCode: new FormControl(
+        { value: defaultCountryCode, disabled: field.disabled ?? false }
+      ),
+      number: new FormControl(
+        { value: existingValue.number ?? '', disabled: field.disabled ?? false },
+        numberValidators
+      ),
+    });
   }
 
   /**
@@ -306,13 +343,14 @@ export class DynamicForm implements OnInit, OnDestroy {
       this.form.get(key)?.markAsTouched();
     });
 
-    // Mark table and datagrid cells as touched
+    // Mark table, datagrid, and phone fields as touched
     this.markTableFieldsTouched();
     this.markDataGridFieldsTouched();
+    this.markPhoneFieldsTouched();
 
     this.updateErrors();
 
-    // Check regular form validity AND table/datagrid validity
+    // Check regular form validity AND table/datagrid/phone validity
     let isValid = true;
     const currentConfig = this.config();
 
@@ -323,7 +361,10 @@ export class DynamicForm implements OnInit, OnDestroy {
       } else if (field.type === 'datagrid' && !this.isDataGridValid(field.name)) {
         isValid = false;
         break;
-      } else if (field.type !== 'table' && field.type !== 'datagrid') {
+      } else if (field.type === 'phone' && !this.isPhoneValid(field.name)) {
+        isValid = false;
+        break;
+      } else if (field.type !== 'table' && field.type !== 'datagrid' && field.type !== 'phone') {
         const control = this.form.get(field.name);
         if (control?.invalid) {
           isValid = false;
@@ -517,6 +558,10 @@ export class DynamicForm implements OnInit, OnDestroy {
         }
       } else if (field.type === 'datagrid') {
         if (!this.isDataGridValid(field.name)) {
+          return false;
+        }
+      } else if (field.type === 'phone') {
+        if (!this.isPhoneValid(field.name)) {
           return false;
         }
       } else {
@@ -1252,6 +1297,100 @@ export class DynamicForm implements OnInit, OnDestroy {
               });
             }
           });
+        }
+      }
+    });
+  }
+
+  // ============================================
+  // Phone Field Methods
+  // ============================================
+
+  /**
+   * Get FormGroup for a phone field
+   */
+  getPhoneFormGroup(fieldName: string): FormGroup | null {
+    const control = this.form.get(fieldName);
+    return control instanceof FormGroup ? control : null;
+  }
+
+  /**
+   * Handle phone number input - filter to only allow numeric characters
+   */
+  onPhoneNumberInput(event: Event, fieldName: string): void {
+    const input = event.target as HTMLInputElement;
+    const filteredValue = input.value.replace(/\D/g, '');
+    if (input.value !== filteredValue) {
+      input.value = filteredValue;
+      const phoneGroup = this.getPhoneFormGroup(fieldName);
+      if (phoneGroup) {
+        phoneGroup.get('number')?.setValue(filteredValue);
+      }
+    }
+  }
+
+  /**
+   * Check if phone field is valid
+   */
+  isPhoneValid(fieldName: string): boolean {
+    const phoneGroup = this.getPhoneFormGroup(fieldName);
+    if (!phoneGroup) return true;
+
+    const numberControl = phoneGroup.get('number');
+    return !numberControl?.invalid;
+  }
+
+  /**
+   * Check if phone field has error (for display)
+   */
+  hasPhoneError(fieldName: string): boolean {
+    const phoneGroup = this.getPhoneFormGroup(fieldName);
+    if (!phoneGroup) return false;
+
+    const numberControl = phoneGroup.get('number');
+    return !!(numberControl?.invalid && numberControl?.touched);
+  }
+
+  /**
+   * Get phone error message
+   */
+  getPhoneErrorMessage(fieldName: string): string {
+    const field = this.getField(fieldName);
+    if (!field) return '';
+
+    const phoneGroup = this.getPhoneFormGroup(fieldName);
+    if (!phoneGroup) return '';
+
+    const numberControl = phoneGroup.get('number');
+    if (!numberControl || !numberControl.errors) return '';
+
+    // Check for pattern error first (non-numeric characters)
+    if (numberControl.hasError('pattern')) {
+      return 'Phone number must contain only digits';
+    }
+
+    // Check validation rules from field config
+    const validations = field.validations || [];
+    for (const validation of validations) {
+      if (validation.type === 'required' && numberControl.hasError('required')) {
+        return validation.message;
+      }
+    }
+
+    return 'Invalid phone number';
+  }
+
+  /**
+   * Mark phone fields as touched (for form submission)
+   */
+  private markPhoneFieldsTouched(): void {
+    const currentConfig = this.config();
+    currentConfig.fields.forEach((field) => {
+      if (field.type === 'phone') {
+        const phoneGroup = this.getPhoneFormGroup(field.name);
+        if (phoneGroup) {
+          phoneGroup.get('countryCode')?.markAsTouched();
+          phoneGroup.get('number')?.markAsTouched();
         }
       }
     });

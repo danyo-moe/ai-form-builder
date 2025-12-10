@@ -1,7 +1,24 @@
 /**
  * Supported form field types
  */
-export type FieldType = 'text' | 'email' | 'number' | 'textarea' | 'select' | 'checkbox' | 'radio' | 'date' | 'table' | 'info' | 'datagrid';
+export type FieldType = 'text' | 'email' | 'number' | 'textarea' | 'select' | 'checkbox' | 'radio' | 'date' | 'table' | 'info' | 'datagrid' | 'phone';
+
+/**
+ * Country code option for phone field
+ */
+export interface CountryCodeOption {
+  code: string;      // e.g., '+61'
+  country: string;   // e.g., 'Australia'
+  flag?: string;     // Optional emoji flag e.g., '🇦🇺'
+}
+
+/**
+ * Phone field configuration
+ */
+export interface PhoneConfig {
+  countryCodes: CountryCodeOption[];
+  defaultCountryCode?: string;  // Default selected country code e.g., '+61'
+}
 
 /**
  * Column types supported within tables (subset of FieldType)
@@ -149,6 +166,7 @@ export interface FormFieldConfig {
   tableConfig?: TableConfig; // Configuration for table field type
   datagridConfig?: DataGridConfig; // Configuration for datagrid field type
   content?: string; // Markdown content for info field type
+  phoneConfig?: PhoneConfig; // Configuration for phone field type
 }
 
 /**

@@ -333,6 +333,7 @@ The main application (`src/app/app.ts` and `src/app/app.html`) provides a test h
 - `table`: Repeatable table with configurable columns
 - `info`: Static information block with markdown support
 - `datagrid`: Fixed-row data grid with column groups, computed columns, and totals
+- `phone`: Mobile phone input with country code selector and numeric-only phone number
 
 #### Radio and Checkbox Groups
 
@@ -426,6 +427,81 @@ The `info` field type displays static information blocks with markdown support. 
 [data-info-content] strong {
   color: #512B58;
   font-weight: bold;
+}
+```
+
+#### Phone Field Type
+
+The `phone` field type provides a mobile phone input with a country code selector and a numeric-only phone number input. The phone number input automatically filters out non-numeric characters.
+
+**Phone Configuration**:
+```typescript
+{
+  name: 'mobilePhone',
+  label: 'Mobile Phone',
+  type: 'phone',
+  sectionId: 'contact-info',
+  placeholder: 'Phone number',
+  phoneConfig: {
+    countryCodes: [
+      { code: '+61', country: 'Australia', flag: '🇦🇺' },
+      { code: '+64', country: 'New Zealand', flag: '🇳🇿' },
+      { code: '+1', country: 'USA/Canada', flag: '🇺🇸' },
+      { code: '+44', country: 'United Kingdom', flag: '🇬🇧' }
+    ],
+    defaultCountryCode: '+61'
+  },
+  validations: [{ type: 'required', message: 'Phone number is required' }]
+}
+```
+
+**PhoneConfig Interface**:
+```typescript
+interface PhoneConfig {
+  countryCodes: CountryCodeOption[];
+  defaultCountryCode?: string;  // Default selected country code e.g., '+61'
+}
+
+interface CountryCodeOption {
+  code: string;      // e.g., '+61'
+  country: string;   // e.g., 'Australia'
+  flag?: string;     // Optional emoji flag e.g., '🇦🇺'
+}
+```
+
+**Data Storage Format**:
+```typescript
+// Phone value is stored as an object
+{
+  countryCode: '+61',
+  number: '0412345678'
+}
+```
+
+**Data Attributes for Phone Field Styling**:
+- `data-phone-container`: Container for country code select and phone input
+- `data-phone-valid`: "true" | "false" - Phone field validation state
+- `data-phone-country-code`: Country code select element
+- `data-phone-number`: Phone number input element
+
+**Styling** (in theme):
+```scss
+[data-phone-container] {
+  display: flex;
+  gap: 8px;
+}
+
+[data-phone-country-code] {
+  min-width: 180px;
+}
+
+[data-phone-number] {
+  flex: 1;
+}
+
+[data-phone-valid="false"] [data-phone-number] {
+  border-color: #c00;
+  background: #fff8f8;
 }
 ```
 

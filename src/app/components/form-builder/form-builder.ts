@@ -16,6 +16,8 @@ import {
   DataGridColumnGroup,
   DataGridRowLabel,
   DataGridConfig,
+  PhoneConfig,
+  CountryCodeOption,
 } from '../../models/form-config.interface';
 import { FormBuilder as FormBuilderService } from '../../services/form-builder';
 
@@ -49,7 +51,33 @@ export class FormBuilder {
   message = signal<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Field types for dropdown
-  fieldTypes: FieldType[] = ['text', 'email', 'number', 'textarea', 'date', 'select', 'radio', 'checkbox', 'table', 'info', 'datagrid'];
+  fieldTypes: FieldType[] = ['text', 'email', 'number', 'textarea', 'date', 'select', 'radio', 'checkbox', 'table', 'info', 'datagrid', 'phone'];
+
+  // Default country codes for phone field
+  defaultCountryCodes: CountryCodeOption[] = [
+    { code: '+61', country: 'Australia', flag: '🇦🇺' },
+    { code: '+64', country: 'New Zealand', flag: '🇳🇿' },
+    { code: '+1', country: 'USA/Canada', flag: '🇺🇸' },
+    { code: '+44', country: 'United Kingdom', flag: '🇬🇧' },
+    { code: '+91', country: 'India', flag: '🇮🇳' },
+    { code: '+86', country: 'China', flag: '🇨🇳' },
+    { code: '+81', country: 'Japan', flag: '🇯🇵' },
+    { code: '+82', country: 'South Korea', flag: '🇰🇷' },
+    { code: '+65', country: 'Singapore', flag: '🇸🇬' },
+    { code: '+60', country: 'Malaysia', flag: '🇲🇾' },
+    { code: '+63', country: 'Philippines', flag: '🇵🇭' },
+    { code: '+66', country: 'Thailand', flag: '🇹🇭' },
+    { code: '+84', country: 'Vietnam', flag: '🇻🇳' },
+    { code: '+62', country: 'Indonesia', flag: '🇮🇩' },
+    { code: '+49', country: 'Germany', flag: '🇩🇪' },
+    { code: '+33', country: 'France', flag: '🇫🇷' },
+    { code: '+39', country: 'Italy', flag: '🇮🇹' },
+    { code: '+34', country: 'Spain', flag: '🇪🇸' },
+    { code: '+31', country: 'Netherlands', flag: '🇳🇱' },
+    { code: '+27', country: 'South Africa', flag: '🇿🇦' },
+    { code: '+55', country: 'Brazil', flag: '🇧🇷' },
+    { code: '+52', country: 'Mexico', flag: '🇲🇽' },
+  ];
 
   // DataGrid column types for dropdown
   datagridColumnTypes: DataGridColumnType[] = ['text', 'number', 'date', 'select'];
@@ -389,6 +417,19 @@ export class FormBuilder {
     // Clear content when switching away from info type
     if (type !== 'info') {
       delete field.content;
+    }
+
+    // Initialize phoneConfig when switching to phone type
+    if (type === 'phone' && !field.phoneConfig) {
+      field.phoneConfig = {
+        countryCodes: [...this.defaultCountryCodes],
+        defaultCountryCode: '+61',
+      };
+    }
+
+    // Clear phoneConfig when switching away from phone type
+    if (type !== 'phone') {
+      delete field.phoneConfig;
     }
 
     this.updateField(index, field);
@@ -1470,5 +1511,126 @@ export class FormBuilder {
    */
   updateDataGridColumnTotalLabel(fieldIndex: number, label: string): void {
     this.updateDataGridTotalsConfig(fieldIndex, { columnTotalLabel: label || undefined });
+  }
+
+  // ============================================
+  // Phone Configuration Methods
+  // ============================================
+
+  /**
+   * Update phone config property
+   */
+  updatePhoneConfig(fieldIndex: number, updates: Partial<PhoneConfig>): void {
+    const field = this.currentConfig().fields[fieldIndex];
+    if (!field.phoneConfig) return;
+
+    const updatedField = {
+      ...field,
+      phoneConfig: { ...field.phoneConfig, ...updates },
+    };
+    this.updateField(fieldIndex, updatedField);
+  }
+
+  /**
+   * Update default country code
+   */
+  updatePhoneDefaultCountryCode(fieldIndex: number, code: string): void {
+    this.updatePhoneConfig(fieldIndex, { defaultCountryCode: code || undefined });
+  }
+
+  /**
+   * Add a country code to phone config
+   */
+  addPhoneCountryCode(fieldIndex: number): void {
+    const field = this.currentConfig().fields[fieldIndex];
+    if (!field.phoneConfig) return;
+
+    const newCountry: CountryCodeOption = {
+      code: '+00',
+      country: 'New Country',
+    };
+
+    const countryCodes = [...field.phoneConfig.countryCodes, newCountry];
+    this.updatePhoneConfig(fieldIndex, { countryCodes });
+  }
+
+  /**
+   * Update a country code
+   */
+  updatePhoneCountryCode(
+    fieldIndex: number,
+    countryIndex: number,
+    updates: Partial<CountryCodeOption>
+  ): void {
+    const field = this.currentConfig().fields[fieldIndex];
+    if (!field.phoneConfig) return;
+
+    const countryCodes = [...field.phoneConfig.countryCodes];
+    countryCodes[countryIndex] = { ...countryCodes[countryIndex], ...updates };
+    this.updatePhoneConfig(fieldIndex, { countryCodes });
+  }
+
+  /**
+   * Remove a country code
+   */
+  removePhoneCountryCode(fieldIndex: number, countryIndex: number): void {
+    const field = this.currentConfig().fields[fieldIndex];
+    if (!field.phoneConfig || field.phoneConfig.countryCodes.length <= 1) return;
+
+    const countryCodes = field.phoneConfig.countryCodes.filter((_, i) => i !== countryIndex);
+    this.updatePhoneConfig(fieldIndex, { countryCodes });
+  }
+
+  /**
+   * Move country code up
+   */
+  movePhoneCountryCodeUp(fieldIndex: number, countryIndex: number): void {
+    if (countryIndex === 0) return;
+    const field = this.currentConfig().fields[fieldIndex];
+    if (!field.phoneConfig) return;
+
+    const countryCodes = [...field.phoneConfig.countryCodes];
+    [countryCodes[countryIndex - 1], countryCodes[countryIndex]] = [
+      countryCodes[countryIndex],
+      countryCodes[countryIndex - 1],
+    ];
+    this.updatePhoneConfig(fieldIndex, { countryCodes });
+  }
+
+  /**
+   * Move country code down
+   */
+  movePhoneCountryCodeDown(fieldIndex: number, countryIndex: number): void {
+    const field = this.currentConfig().fields[fieldIndex];
+    if (!field.phoneConfig) return;
+    if (countryIndex >= field.phoneConfig.countryCodes.length - 1) return;
+
+    const countryCodes = [...field.phoneConfig.countryCodes];
+    [countryCodes[countryIndex], countryCodes[countryIndex + 1]] = [
+      countryCodes[countryIndex + 1],
+      countryCodes[countryIndex],
+    ];
+    this.updatePhoneConfig(fieldIndex, { countryCodes });
+  }
+
+  /**
+   * Update country code code
+   */
+  updatePhoneCountryCodeCode(fieldIndex: number, countryIndex: number, code: string): void {
+    this.updatePhoneCountryCode(fieldIndex, countryIndex, { code });
+  }
+
+  /**
+   * Update country code country name
+   */
+  updatePhoneCountryCodeCountry(fieldIndex: number, countryIndex: number, country: string): void {
+    this.updatePhoneCountryCode(fieldIndex, countryIndex, { country });
+  }
+
+  /**
+   * Update country code flag
+   */
+  updatePhoneCountryCodeFlag(fieldIndex: number, countryIndex: number, flag: string): void {
+    this.updatePhoneCountryCode(fieldIndex, countryIndex, { flag: flag || undefined });
   }
 }

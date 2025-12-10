@@ -306,6 +306,45 @@
               </div>
             }
           }
+          @case ('phone') {
+            @if (field.phoneConfig) {
+              <div
+                data-phone-container
+                [formGroupName]="field.name"
+                [attr.data-phone-valid]="isPhoneValid(field.name)">
+                <select
+                  formControlName="countryCode"
+                  data-phone-country-code
+                  [attr.data-input-type]="'phone-country'">
+                  @for (country of field.phoneConfig.countryCodes; track country.code) {
+                    <option [value]="country.code">
+                      @if (country.flag) {
+                        {{ country.flag }}
+                      }
+                      {{ country.code }} ({{ country.country }})
+                    </option>
+                  }
+                </select>
+                <input
+                  type="tel"
+                  formControlName="number"
+                  [placeholder]="field.placeholder || 'Phone number'"
+                  data-phone-number
+                  [attr.data-input-type]="'phone-number'"
+                  (input)="onPhoneNumberInput($event, field.name)"
+                  inputmode="numeric"
+                  pattern="[0-9]*"
+                />
+              </div>
+            }
+            @if (hasPhoneError(field.name)) {
+              <div
+                [attr.data-error-for]="field.name"
+                data-validation-error>
+                {{ getPhoneErrorMessage(field.name) }}
+              </div>
+            }
+          }
           @case ('datagrid') {
             @if (field.datagridConfig) {
               <div
