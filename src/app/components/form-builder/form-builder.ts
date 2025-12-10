@@ -37,7 +37,7 @@ export class FormBuilder {
   message = signal<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Field types for dropdown
-  fieldTypes: FieldType[] = ['text', 'email', 'number', 'textarea', 'date'];
+  fieldTypes: FieldType[] = ['text', 'email', 'number', 'textarea', 'date', 'select'];
 
   // Validation types
   validationTypes = ['required', 'email', 'minLength', 'maxLength', 'min', 'max', 'pattern'];
@@ -480,5 +480,51 @@ export class FormBuilder {
 
   updateSectionAnchorId(id: string, anchorId: string): void {
     this.updateSection(id, { anchorId: anchorId || undefined });
+  }
+
+  // ============================================
+  // Select Options Management Methods
+  // ============================================
+
+  /**
+   * Add a new option to a select field
+   */
+  addOption(fieldIndex: number): void {
+    const field = { ...this.currentConfig().fields[fieldIndex] };
+    field.options = [...(field.options || []), { label: 'New Option', value: '' }];
+    this.updateField(fieldIndex, field);
+  }
+
+  /**
+   * Update an option
+   */
+  updateOption(fieldIndex: number, optionIndex: number, updates: { label?: string; value?: string }): void {
+    const field = { ...this.currentConfig().fields[fieldIndex] };
+    field.options = [...(field.options || [])];
+    field.options[optionIndex] = { ...field.options[optionIndex], ...updates };
+    this.updateField(fieldIndex, field);
+  }
+
+  /**
+   * Remove an option
+   */
+  removeOption(fieldIndex: number, optionIndex: number): void {
+    const field = { ...this.currentConfig().fields[fieldIndex] };
+    field.options = (field.options || []).filter((_, i) => i !== optionIndex);
+    this.updateField(fieldIndex, field);
+  }
+
+  /**
+   * Update option label
+   */
+  updateOptionLabel(fieldIndex: number, optionIndex: number, label: string): void {
+    this.updateOption(fieldIndex, optionIndex, { label });
+  }
+
+  /**
+   * Update option value
+   */
+  updateOptionValue(fieldIndex: number, optionIndex: number, value: string): void {
+    this.updateOption(fieldIndex, optionIndex, { value });
   }
 }

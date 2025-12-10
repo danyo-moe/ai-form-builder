@@ -220,6 +220,32 @@ $text-muted: #666;
   border: 1px solid $border-color;
 }
 
+.options-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid $border-color;
+
+  h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.875rem;
+  }
+}
+
+.option-item {
+  padding: 0.75rem;
+  margin-top: 0.75rem;
+  background: $lavender-light;
+  border: 1px solid $border-color;
+
+  .form-group {
+    margin-bottom: 0.5rem;
+
+    &:last-of-type {
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+
 .empty-state, .empty-editor {
   text-align: center;
   color: $text-muted;

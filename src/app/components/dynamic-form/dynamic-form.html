@@ -95,6 +95,19 @@
               [attr.data-input-type]="field.type"
             />
           }
+          @case ('select') {
+            <select
+              [id]="field.name"
+              [formControlName]="field.name"
+              [attr.data-input-type]="field.type">
+              @if (field.placeholder) {
+                <option value="" disabled>{{ field.placeholder }}</option>
+              }
+              @for (option of field.options; track option.value) {
+                <option [value]="option.value">{{ option.label }}</option>
+              }
+            </select>
+          }
         }
 
         @if (hasError(field.name)) {
