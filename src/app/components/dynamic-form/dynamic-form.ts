@@ -238,6 +238,56 @@ export class DynamicForm implements OnInit, OnDestroy {
   }
 
   /**
+   * Get fields grouped by inlineGroup
+   * Returns array of field arrays - each inner array is a row
+   */
+  getGroupedFields(): FormFieldConfig[][] {
+    const sortedFields = this.getSortedFields();
+    const groups: FormFieldConfig[][] = [];
+    let currentGroup: FormFieldConfig[] = [];
+    let currentGroupName: string | undefined = undefined;
+
+    sortedFields.forEach((field) => {
+      if (field.inlineGroup) {
+        // Field has an inline group
+        if (field.inlineGroup === currentGroupName) {
+          // Same group, add to current
+          currentGroup.push(field);
+        } else {
+          // New group, save current and start new
+          if (currentGroup.length > 0) {
+            groups.push(currentGroup);
+          }
+          currentGroup = [field];
+          currentGroupName = field.inlineGroup;
+        }
+      } else {
+        // No inline group - standalone field
+        if (currentGroup.length > 0) {
+          groups.push(currentGroup);
+          currentGroup = [];
+          currentGroupName = undefined;
+        }
+        groups.push([field]);
+      }
+    });
+
+    // Don't forget the last group
+    if (currentGroup.length > 0) {
+      groups.push(currentGroup);
+    }
+
+    return groups;
+  }
+
+  /**
+   * Check if a group has multiple fields (is inline)
+   */
+  isInlineGroup(group: FormFieldConfig[]): boolean {
+    return group.length > 1;
+  }
+
+  /**
    * Check if field has error
    */
   hasError(fieldName: string): boolean {

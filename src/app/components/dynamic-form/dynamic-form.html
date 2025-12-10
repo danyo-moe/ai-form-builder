@@ -7,98 +7,107 @@
   [attr.data-form-touched]="form.touched">
 
   <div data-form-section="fields">
-    @for (field of getSortedFields(); track field.name) {
+    @for (group of getGroupedFields(); track $index) {
       <div
-        [attr.data-field-name]="field.name"
-        [attr.data-field-type]="field.type"
-        [attr.data-field-valid]="!hasError(field.name)"
-        [attr.data-field-touched]="form.get(field.name)?.touched"
-        [attr.data-field-dirty]="form.get(field.name)?.dirty"
-        [attr.data-field-disabled]="form.get(field.name)?.disabled"
-        [attr.data-field-required]="isFieldRequired(field)"
-        [ngClass]="field.cssClass">
-
-        <label
-          [for]="field.name"
-          [attr.data-label-for]="field.name">
-          {{ field.label }}
-          @if (isFieldRequired(field)) {
-            <span data-required-indicator>*</span>
-          }
-          @if (field.description) {
-            <span
-              data-info-icon
-              (click)="togglePopover(field.name); $event.stopPropagation()"
-              [attr.data-popover-open]="activePopover === field.name"
-              title="Click for more information">
-              &#9432;
-            </span>
-            @if (activePopover === field.name) {
-              <span data-popover>
-                <span data-popover-content>{{ field.description }}</span>
-                <button
-                  type="button"
-                  data-popover-close
-                  (click)="closePopover(); $event.stopPropagation()">
-                  &times;
-                </button>
-              </span>
-            }
-          }
-        </label>
-
-        @switch (field.type) {
-          @case ('text') {
-            <input
-              [id]="field.name"
-              [formControlName]="field.name"
-              type="text"
-              [placeholder]="field.placeholder || ''"
-              [attr.data-input-type]="field.type"
-            />
-          }
-          @case ('email') {
-            <input
-              [id]="field.name"
-              [formControlName]="field.name"
-              type="email"
-              [placeholder]="field.placeholder || ''"
-              [attr.data-input-type]="field.type"
-            />
-          }
-          @case ('number') {
-            <input
-              [id]="field.name"
-              [formControlName]="field.name"
-              type="number"
-              [placeholder]="field.placeholder || ''"
-              [attr.data-input-type]="field.type"
-            />
-          }
-          @case ('textarea') {
-            <textarea
-              [id]="field.name"
-              [formControlName]="field.name"
-              [placeholder]="field.placeholder || ''"
-              [attr.data-input-type]="field.type"
-              rows="4"
-            ></textarea>
-          }
-          @case ('date') {
-            <input
-              [id]="field.name"
-              [formControlName]="field.name"
-              type="date"
-              [attr.data-input-type]="field.type"
-            />
-          }
-        }
-
-        @if (hasError(field.name)) {
+        data-field-row
+        [attr.data-inline-group]="isInlineGroup(group) ? group[0].inlineGroup : null">
+        @for (field of group; track field.name) {
           <div
-            [attr.data-error-for]="field.name"
-            data-validation-error>
-            {{ getErrorMessage(field.name) }}
+            [attr.data-field-name]="field.name"
+            [attr.data-field-type]="field.type"
+            [attr.data-field-valid]="!hasError(field.name)"
+            [attr.data-field-touched]="form.get(field.name)?.touched"
+            [attr.data-field-dirty]="form.get(field.name)?.dirty"
+            [attr.data-field-disabled]="form.get(field.name)?.disabled"
+            [attr.data-field-required]="isFieldRequired(field)"
+            [attr.data-field-width]="field.width || 1"
+            [ngClass]="field.cssClass">
+
+            <label
+              [for]="field.name"
+              [attr.data-label-for]="field.name">
+              {{ field.label }}
+              @if (isFieldRequired(field)) {
+                <span data-required-indicator>*</span>
+              }
+              @if (field.description) {
+                <span
+                  data-info-icon
+                  (click)="togglePopover(field.name); $event.stopPropagation()"
+                  [attr.data-popover-open]="activePopover === field.name"
+                  title="Click for more information">
+                  &#9432;
+                </span>
+                @if (activePopover === field.name) {
+                  <span data-popover>
+                    <span data-popover-content>{{ field.description }}</span>
+                    <button
+                      type="button"
+                      data-popover-close
+                      (click)="closePopover(); $event.stopPropagation()">
+                      &times;
+                    </button>
+                  </span>
+                }
+              }
+            </label>
+
+            <div data-input-container>
+              @switch (field.type) {
+                @case ('text') {
+                  <input
+                    [id]="field.name"
+                    [formControlName]="field.name"
+                    type="text"
+                    [placeholder]="field.placeholder || ''"
+                    [attr.data-input-type]="field.type"
+                  />
+                }
+                @case ('email') {
+                  <input
+                    [id]="field.name"
+                    [formControlName]="field.name"
+                    type="email"
+                    [placeholder]="field.placeholder || ''"
+                    [attr.data-input-type]="field.type"
+                  />
+                }
+                @case ('number') {
+                  <input
+                    [id]="field.name"
+                    [formControlName]="field.name"
+                    type="number"
+                    [placeholder]="field.placeholder || ''"
+                    [attr.data-input-type]="field.type"
+                  />
+                }
+                @case ('textarea') {
+                  <textarea
+                    [id]="field.name"
+                    [formControlName]="field.name"
+                    [placeholder]="field.placeholder || ''"
+                    [attr.data-input-type]="field.type"
+                    rows="4"
+                  ></textarea>
+                }
+                @case ('date') {
+                  <input
+                    [id]="field.name"
+                    [formControlName]="field.name"
+                    type="date"
+                    [attr.data-input-type]="field.type"
+                  />
+                }
+              }
+
+              @if (hasError(field.name)) {
+                <div
+                  [attr.data-error-for]="field.name"
+                  data-validation-error>
+                  {{ getErrorMessage(field.name) }}
+                </div>
+              }
+            </div>
           </div>
         }
       </div>

@@ -28,6 +28,8 @@ export interface FormFieldConfig {
   disabled?: boolean;
   cssClass?: string;
   order?: number;
+  inlineGroup?: string; // Fields with same group name render on same row
+  width?: number; // Width as flex proportion (1-4), defaults to 1
 }
 
 /**

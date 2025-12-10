@@ -305,6 +305,16 @@ export class FormBuilder {
     this.updateField(index, field);
   }
 
+  updateFieldInlineGroup(index: number, inlineGroup: string): void {
+    const field = { ...this.currentConfig().fields[index], inlineGroup: inlineGroup || undefined };
+    this.updateField(index, field);
+  }
+
+  updateFieldWidth(index: number, width: number): void {
+    const field = { ...this.currentConfig().fields[index], width: Number(width) };
+    this.updateField(index, field);
+  }
+
   updateValidationType(fieldIndex: number, validationIndex: number, type: string): void {
     const validation = {
       ...this.currentConfig().fields[fieldIndex].validations![validationIndex],

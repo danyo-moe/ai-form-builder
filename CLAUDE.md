@@ -6,6 +6,54 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 AI Form Builder is an Angular 21 application using standalone components with TypeScript strict mode enabled. The project uses Angular's modern architecture without NgModules.
 
+## Angular Best Practices
+
+### TypeScript Best Practices
+- Use strict type checking
+- Prefer type inference when the type is obvious
+- Avoid the `any` type; use `unknown` when type is uncertain
+
+### Angular Best Practices
+- Always use standalone components over NgModules
+- Must NOT set `standalone: true` inside Angular decorators. It's the default in Angular v20+.
+- Use signals for state management
+- Implement lazy loading for feature routes
+- Do NOT use the `@HostBinding` and `@HostListener` decorators. Put host bindings inside the `host` object of the `@Component` or `@Directive` decorator instead
+- Use `NgOptimizedImage` for all static images (does not work for inline base64 images)
+
+### Accessibility Requirements
+- Must pass all AXE checks
+- Must follow all WCAG AA minimums, including focus management, color contrast, and ARIA attributes
+
+### Components
+- Keep components small and focused on a single responsibility
+- Use `input()` and `output()` functions instead of decorators
+- Use `computed()` for derived state
+- Set `changeDetection: ChangeDetectionStrategy.OnPush` in `@Component` decorator
+- Prefer inline templates for small components
+- Prefer Reactive forms instead of Template-driven ones
+- Do NOT use `ngClass`, use `class` bindings instead
+- Do NOT use `ngStyle`, use `style` bindings instead
+- When using external templates/styles, use paths relative to the component TS file
+
+### State Management
+- Use signals for local component state
+- Use `computed()` for derived state
+- Keep state transformations pure and predictable
+- Do NOT use `mutate` on signals, use `update` or `set` instead
+
+### Templates
+- Keep templates simple and avoid complex logic
+- Use native control flow (`@if`, `@for`, `@switch`) instead of `*ngIf`, `*ngFor`, `*ngSwitch`
+- Use the async pipe to handle observables
+- Do not assume globals like (`new Date()`) are available
+- Do not write arrow functions in templates (they are not supported)
+
+### Services
+- Design services around a single responsibility
+- Use the `providedIn: 'root'` option for singleton services
+- Use the `inject()` function instead of constructor injection
+
 ## Development Commands
 
 ### Development Server
@@ -195,32 +243,30 @@ Manages persistence of form submission data.
 
 ### Theming System
 
-The application includes three example themes demonstrating different styling approaches:
+The application uses a single default theme with a government/official form style:
 
-#### 1. Minimal Theme (`src/styles/form-themes/minimal.scss`)
-- Clean, simple aesthetic
-- Monochrome color scheme
-- Minimal borders and spacing
-- System fonts
-
-#### 2. Modern Theme (`src/styles/form-themes/modern.scss`)
-- Vibrant gradient buttons
-- Rounded corners and shadows
-- Blue accent color (#3b82f6)
-- Contemporary design
-
-#### 3. Classic Theme (`src/styles/form-themes/classic.scss`)
-- Traditional serif fonts (Georgia)
-- Double borders
-- Earth-tone colors
-- Centered layout
+#### Default Theme (`src/styles/form-themes/default.scss`)
+- Purple headers (#512B58) with white text
+- Lavender backgrounds (#E8E0ED) for field rows
+- Table-like layout with labels on the left
+- Clean borders and professional styling
+- Arial font family
 
 **Styling Pattern**:
-All themes use attribute selectors to style the headless component:
+The theme uses attribute selectors to style the headless component:
 ```scss
 // Target forms by data attribute
 form[data-form-id] {
   /* form styles */
+}
+
+// Target field rows and inline groups
+[data-field-row] {
+  /* row styles */
+}
+
+[data-field-row][data-inline-group] {
+  /* inline group specific styles */
 }
 
 // Target fields by state
@@ -230,7 +276,7 @@ form[data-form-id] {
 
 // Target buttons by action type
 button[data-action="submit"] {
-  background: blue;
+  background: #512B58;
 }
 ```
 
@@ -241,13 +287,12 @@ The main application (`src/app/app.ts` and `src/app/app.html`) provides a test h
 #### Builder View
 - Visual form builder interface
 - Add/edit/remove fields
-- Configure validations
+- Configure validations and inline groups
 - Save/load configurations
 - Import/export JSON
 
 #### Preview & Test View
-- Theme selector (Minimal, Modern, Classic)
-- Live form preview with selected theme
+- Live form preview with default theme
 - Functional form submission
 - Display submission results
 - Documentation of data attributes
@@ -293,10 +338,8 @@ src/
 │   ├── app.html                     # Test harness template
 │   └── app.scss                     # Test harness styles
 └── styles/
-    └── form-themes/                 # Example themes
-        ├── minimal.scss
-        ├── modern.scss
-        └── classic.scss
+    └── form-themes/
+        └── default.scss             # Default theme (government style)
 ```
 
 ### Usage Example
@@ -390,11 +433,10 @@ form[data-form-id="contact-form"] {
 3. Add to `validationTypes` array in `form-builder.ts`
 4. Update validation editor UI in `form-builder.html`
 
-**Creating New Themes**:
-1. Create new SCSS file in `src/styles/form-themes/`
+**Customizing the Theme**:
+1. Edit `src/styles/form-themes/default.scss`
 2. Use attribute selectors targeting `data-*` attributes
-3. Import theme in `src/app/app.scss`
-4. Add theme to themes array in `app.ts`
+3. Key selectors: `[data-field-row]`, `[data-inline-group]`, `[data-field-name]`, `[data-input-container]`
 
 ### Important Angular Template Limitations
 

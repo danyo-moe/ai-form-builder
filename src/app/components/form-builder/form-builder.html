@@ -168,6 +168,31 @@
             ></textarea>
           </div>
 
+          <!-- Inline Group Settings -->
+          <div class="form-group">
+            <label>Inline Group</label>
+            <input
+              type="text"
+              [ngModel]="field.inlineGroup"
+              (ngModelChange)="updateFieldInlineGroup(fieldIndex, $event)"
+              placeholder="e.g. name-row, address-row"
+            />
+            <small class="form-hint">Fields with the same group name appear on the same row</small>
+          </div>
+
+          <div class="form-group">
+            <label>Width (1-4)</label>
+            <select
+              [ngModel]="field.width || 1"
+              (ngModelChange)="updateFieldWidth(fieldIndex, $event)">
+              <option [value]="1">1 (default)</option>
+              <option [value]="2">2 (double)</option>
+              <option [value]="3">3 (triple)</option>
+              <option [value]="4">4 (quadruple)</option>
+            </select>
+            <small class="form-hint">Relative width within inline group</small>
+          </div>
+
           <div class="form-group">
             <label>
               <input

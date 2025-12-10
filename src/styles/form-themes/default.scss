@@ -30,18 +30,52 @@ form[data-form-id] {
   border-bottom: 1px solid #ccc;
 }
 
+/* Field Row - Container for one or more fields */
+[data-field-row] {
+  display: flex;
+  flex-wrap: nowrap;
+  border-bottom: 1px solid #ccc;
+}
+
+[data-field-row]:last-child {
+  border-bottom: none;
+}
+
+/* Inline Group - Multiple fields in a row */
+[data-field-row][data-inline-group] [data-field-name] {
+  border-bottom: none;
+  border-right: 1px solid #ccc;
+}
+
+[data-field-row][data-inline-group] [data-field-name]:last-child {
+  border-right: none;
+}
+
+/* Field width proportions for inline groups */
+[data-field-row][data-inline-group] [data-field-width="1"] {
+  flex: 1;
+}
+
+[data-field-row][data-inline-group] [data-field-width="2"] {
+  flex: 2;
+}
+
+[data-field-row][data-inline-group] [data-field-width="3"] {
+  flex: 3;
+}
+
+[data-field-row][data-inline-group] [data-field-width="4"] {
+  flex: 4;
+}
+
 /* Individual Field - Table row style */
 [data-field-name] {
   display: flex;
   flex-wrap: wrap;
+  flex: 1;
   align-items: stretch;
-  border-bottom: 1px solid #ccc;
   background: #E8E0ED;
   margin: 0;
-}
-
-[data-field-name]:last-child {
-  border-bottom: none;
 }
 
 /* Labels - Left column style */
@@ -67,10 +101,10 @@ label[data-label-for] {
 }
 
 /* Input container - Right column style */
-[data-field-name] > div:has(input),
-[data-field-name] > div:has(textarea) {
+[data-input-container] {
   flex: 1;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   padding: 6px 10px;
   background: #ffffff;
@@ -284,6 +318,20 @@ label[data-label-for] {
 
 /* Responsive */
 @media (max-width: 640px) {
+  /* Stack inline groups vertically on mobile */
+  [data-field-row] {
+    flex-direction: column;
+  }
+
+  [data-field-row][data-inline-group] [data-field-name] {
+    border-right: none;
+    border-bottom: 1px solid #ccc;
+  }
+
+  [data-field-row][data-inline-group] [data-field-name]:last-child {
+    border-bottom: none;
+  }
+
   [data-field-name] {
     flex-direction: column;
   }
