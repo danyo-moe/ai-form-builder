@@ -469,6 +469,7 @@ label[data-label-for] {
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
+  table-layout: fixed; /* Enable fixed layout for column width control */
 }
 
 /* Table Header */
@@ -492,24 +493,21 @@ label[data-label-for] {
   border-right: none;
 }
 
-/* Column width proportions */
+/* Column width proportions (with table-layout: fixed, these set actual widths) */
 [data-table-header-cell][data-column-width="1"] {
-  width: auto;
+  width: 15%;
 }
 
 [data-table-header-cell][data-column-width="2"] {
-  width: auto;
-  min-width: 150px;
+  width: 25%;
 }
 
 [data-table-header-cell][data-column-width="3"] {
-  width: auto;
-  min-width: 200px;
+  width: 35%;
 }
 
 [data-table-header-cell][data-column-width="4"] {
-  width: auto;
-  min-width: 250px;
+  width: 45%;
 }
 
 /* Actions column (narrow) */

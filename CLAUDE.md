@@ -439,9 +439,16 @@ interface TableColumnConfig {
   placeholder?: string;
   validations?: ValidationRule[];
   options?: { label: string; value: any }[];  // For select columns
-  width?: number;  // Column width (1-4)
+  width?: number;  // Column width (1-4): 1=15%, 2=25%, 3=35%, 4=45%
 }
 ```
+
+**Column Widths**:
+The `width` property sets column width as a percentage:
+- `1` = 15% (narrow, good for dates/short values)
+- `2` = 25% (medium)
+- `3` = 35% (wide, good for text fields)
+- `4` = 45% (extra wide)
 
 **Row Modes**:
 - **fixed**: Displays a set number of empty rows (configurable via `fixedRowCount`)
