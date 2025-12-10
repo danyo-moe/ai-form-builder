@@ -256,6 +256,12 @@ button[data-action="submit"][data-can-submit="false"]:hover {
   background: #512B58;
 }
 
+/* Fields without labels - input takes full width */
+[data-has-label="false"] [data-input-container] {
+  flex: 1;
+  width: 100%;
+}
+
 /* Single Checkbox fields (boolean toggle without options) */
 [data-field-type="checkbox"]:has([data-checkbox-single]) {
   flex-direction: row;

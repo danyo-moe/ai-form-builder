@@ -32,36 +32,39 @@
         [attr.data-field-disabled]="form.get(field.name)?.disabled"
         [attr.data-field-required]="isFieldRequired(field)"
         [attr.data-field-width]="field.width || 1"
+        [attr.data-has-label]="!!field.label"
         [ngClass]="field.cssClass">
 
-        <label
-          [for]="field.name"
-          [attr.data-label-for]="field.name">
-          {{ field.label }}
-          @if (isFieldRequired(field)) {
-            <span data-required-indicator>*</span>
-          }
-          @if (field.description) {
-            <span
-              data-info-icon
-              (click)="togglePopover(field.name); $event.stopPropagation()"
-              [attr.data-popover-open]="activePopover === field.name"
-              title="Click for more information">
-              &#9432;
-            </span>
-            @if (activePopover === field.name) {
-              <span data-popover>
-                <span data-popover-content>{{ field.description }}</span>
-                <button
-                  type="button"
-                  data-popover-close
-                  (click)="closePopover(); $event.stopPropagation()">
-                  &times;
-                </button>
-              </span>
+        @if (field.label) {
+          <label
+            [for]="field.name"
+            [attr.data-label-for]="field.name">
+            {{ field.label }}
+            @if (isFieldRequired(field)) {
+              <span data-required-indicator>*</span>
             }
-          }
-        </label>
+            @if (field.description) {
+              <span
+                data-info-icon
+                (click)="togglePopover(field.name); $event.stopPropagation()"
+                [attr.data-popover-open]="activePopover === field.name"
+                title="Click for more information">
+                &#9432;
+              </span>
+              @if (activePopover === field.name) {
+                <span data-popover>
+                  <span data-popover-content>{{ field.description }}</span>
+                  <button
+                    type="button"
+                    data-popover-close
+                    (click)="closePopover(); $event.stopPropagation()">
+                    &times;
+                  </button>
+                </span>
+              }
+            }
+          </label>
+        }
 
         <div data-input-container>
         @switch (field.type) {
